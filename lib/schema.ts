@@ -11,6 +11,7 @@ export const profiles = pgTable('profiles', {
 });
 
 export const selectProfilesSchema = createSelectSchema(profiles);
+export type Profile = typeof profiles.$inferSelect
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
   profilesToClubs: many(profilesToClubs)

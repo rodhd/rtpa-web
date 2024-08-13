@@ -2,6 +2,8 @@ import "./globals.css";
 import { Inter as FontSans } from "next/font/google"
 
 import { cn } from "@/lib/utils"
+import AuthButton from "@/components/AuthButton";
+import NavBar from "@/components/NavBar";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -31,6 +33,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <NavBar />
         <main className="min-h-screen flex flex-col items-center">
           {children}
         </main>
