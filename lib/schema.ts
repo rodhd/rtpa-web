@@ -1,8 +1,9 @@
 import { relations } from "drizzle-orm";
-import { pgTable, point, serial, text, varchar, uuid, integer, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, point, serial, text, varchar, uuid, integer, primaryKey, pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
+export const profileClubRoleEnum = pgEnum('profileClubRole', ['member', 'manager'])
 
 export const profiles = pgTable('profiles', {
   id: uuid('id').notNull(),
@@ -31,7 +32,8 @@ export const clubssRelations = relations(clubs, ({ many }) => ({
 
 export const profilesToClubs = pgTable('profiles_clubs', {
   profileId: uuid('profiles_id').references(() => profiles.id),
-  clubId: integer('club_id').references(() => clubs.id)
+  clubId: integer('club_id').references(() => clubs.id),
+  role: profileClubRoleEnum('role')
 },
 (t) => ({
   pk: primaryKey({ columns: [t.profileId, t.clubId] }),
