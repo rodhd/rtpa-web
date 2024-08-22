@@ -55,10 +55,6 @@ export function ProfileForm(props: profileFormProps) {
     console.log(values)
   }
 
-  const selectList = props.clubs?.map(club =>
-    <SelectItem value={club.id.toString()} key={club.id}>{club.name}</SelectItem>
-  )
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3 space-y-6">
