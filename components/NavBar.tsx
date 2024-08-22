@@ -9,7 +9,7 @@ export default async function NavBar() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return (<div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
+  return (<div className="w-full flex justify-between items-center p-3 text-sm">
     <Button variant="link" asChild>
       <Link href="/">Home</Link>
     </Button>

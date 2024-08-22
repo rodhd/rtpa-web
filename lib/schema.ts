@@ -22,9 +22,12 @@ export const clubs = pgTable('clubs', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   address: text('address').notNull(),
-  location: point('location'),
+  // location: point('location'),
   website: varchar('website', { length: 256 })
 });
+
+export const selectClubsSchema = createSelectSchema(clubs);
+export type Club = typeof clubs.$inferSelect
 
 export const clubssRelations = relations(clubs, ({ many }) => ({
   profilesToClubs: many(profilesToClubs)
