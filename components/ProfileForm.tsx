@@ -93,7 +93,7 @@ export function ProfileForm(props: profileFormProps) {
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-[200px] justify-between",
+                        "justify-between",
                         !field.value && "text-muted-foreground"
                       )}
                     >
@@ -102,9 +102,9 @@ export function ProfileForm(props: profileFormProps) {
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
+                <PopoverContent className="p-0">
                   <Command>
-                    <CommandInput placeholder="Search language..." />
+                    <CommandInput placeholder="Search club..." />
                     <CommandList>
                       <CommandEmpty>No clubs found.</CommandEmpty>
                       <CommandGroup>
