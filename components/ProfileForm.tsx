@@ -6,31 +6,22 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } fr
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Club } from "@/lib/schema";
-import { Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from "./ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
-
-
-const profileFormSchema = z.object({
-  firstName: z.string().min(3, {
-    message: "First name must be longer than 3 characters."
-  }),
-  lastName: z.string().min(3, {
-    message: "Last name must be longer than 3 characters."
-  }),
-  clubIds: z.array(z.number().int())
-});
+import { updateProfile } from "@/lib/profiles/updateProfile";
+import { profileFormSchema, profileFormSchemaType } from "@/lib/profiles/profileFormSchema";
+import { useTransition } from "react";
 
 type additionalProps = {
   clubs: Club[] | null
-}
+};
 
-type profileFormSchemaType = z.infer<typeof profileFormSchema>
-type profileFormProps = profileFormSchemaType & additionalProps
+type profileFormProps = profileFormSchemaType & additionalProps;
 
 export function ProfileForm(props: profileFormProps) {
+  const [isPending, startTransition] = useTransition(); 
   const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -51,8 +42,15 @@ export function ProfileForm(props: profileFormProps) {
     }
   }
 
-  const onSubmit = (values: z.infer<typeof profileFormSchema>) => {
-    console.log(values)
+  const onSubmit = async (values: z.infer<typeof profileFormSchema>) => {
+    startTransition(async () => {
+      const profile = await updateProfile(values);
+      if(!!profile) {
+        form.setValue("firstName", profile?.firstName ?? '');
+        form.setValue("lastName", profile?.lastName ?? '');
+        form.setValue("clubIds", profile.profilesToClubs.map(c => c.clubId))
+      }
+    });
   }
 
   return (
@@ -138,7 +136,7 @@ export function ProfileForm(props: profileFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={isPending}>{isPending ? '...' : 'Submit'}</Button>
       </form>
     </Form>
   )

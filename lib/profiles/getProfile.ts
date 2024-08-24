@@ -17,6 +17,9 @@ export async function getProfile() {
   }
   
   const profile = await db.query.profiles.findFirst({
+    with: {
+      profilesToClubs: true
+    },
     where: eq(profiles.id, user.id)
   });
 

@@ -3,7 +3,8 @@ import { pgTable, point, serial, text, varchar, uuid, integer, primaryKey, pgEnu
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
-export const profileClubRoleEnum = pgEnum('profileClubRole', ['member', 'manager'])
+export const profileClubRoleEnum = pgEnum('profileClubRole', ['member', 'manager']);
+export const profileClubRoleSchema = z.enum(profileClubRoleEnum.enumValues); 
 
 export const profiles = pgTable('profiles', {
   id: uuid('id').notNull(),
@@ -13,6 +14,8 @@ export const profiles = pgTable('profiles', {
 
 export const selectProfilesSchema = createSelectSchema(profiles);
 export type Profile = typeof profiles.$inferSelect
+export const insertProfilesSchema = createInsertSchema(profiles);
+export type ProfileUpdate = typeof profiles.$inferInsert
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
   profilesToClubs: many(profilesToClubs)
@@ -34,10 +37,23 @@ export const clubssRelations = relations(clubs, ({ many }) => ({
 }));
 
 export const profilesToClubs = pgTable('profiles_clubs', {
-  profileId: uuid('profiles_id').references(() => profiles.id),
-  clubId: integer('club_id').references(() => clubs.id),
-  role: profileClubRoleEnum('role')
+  profileId: uuid('profiles_id').references(() => profiles.id).notNull(),
+  clubId: integer('club_id').references(() => clubs.id).notNull(),
+  role: profileClubRoleEnum('role').notNull()
 },
 (t) => ({
   pk: primaryKey({ columns: [t.profileId, t.clubId] }),
 }),);
+
+export const insertProfilesToClubsSchema = createInsertSchema(profilesToClubs);
+
+export const profilesToClubsRelations = relations(profilesToClubs, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [profilesToClubs.profileId],
+    references: [profiles.id]
+  }),
+  club: one(clubs, {
+    fields: [profilesToClubs.clubId],
+    references: [clubs.id]
+  })
+}))
