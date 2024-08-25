@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { profiles } from "../../../lib/schema";
 import { db } from "../../../lib/db";
 import { eq } from "drizzle-orm/sql";

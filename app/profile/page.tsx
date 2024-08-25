@@ -1,7 +1,7 @@
 import { ProfileForm } from "@/components/ProfileForm";
 import { getClubs } from "@/app/actions/clubs/getClubs";
 import { getProfile } from "@/app/actions/profiles/getProfile";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function Profile() {

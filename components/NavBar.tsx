@@ -1,7 +1,7 @@
 import Link from "next/link";
 import AuthButton from "./AuthButton";
 import { Button } from "./ui/button";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function NavBar() {
   const supabase = createClient();

@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs } from "../../../lib/schema";
 import { db } from "../../../lib/db";
 import { and, eq, notInArray } from "drizzle-orm/sql";
