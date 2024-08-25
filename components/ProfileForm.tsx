@@ -10,8 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
-import { updateProfile } from "@/app/actions/profiles/updateProfile";
-import { profileFormSchema, profileFormSchemaType } from "@/app/actions/profiles/profileFormSchema";
+import { updateProfile } from "@/app/actions";
+import { profileFormSchema, profileFormSchemaType } from "@/lib/zodSchemas";
 import { useTransition } from "react";
 
 type additionalProps = {
@@ -59,6 +59,7 @@ export function ProfileForm(props: profileFormProps) {
         <FormField
           control={form.control}
           name="firstName"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>First Name</FormLabel>
@@ -70,6 +71,7 @@ export function ProfileForm(props: profileFormProps) {
         <FormField
           control={form.control}
           name="lastName"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Last Name</FormLabel>
@@ -81,6 +83,7 @@ export function ProfileForm(props: profileFormProps) {
         <FormField
           control={form.control}
           name="clubIds"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Clubs</FormLabel>
