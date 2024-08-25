@@ -1,8 +1,8 @@
 "use server"
 
 import { createClient } from "@/utils/supabase/server";
-import { profiles } from "../schema";
-import { db } from "../db";
+import { profiles } from "../../../lib/schema";
+import { db } from "../../../lib/db";
 import { eq } from "drizzle-orm/sql";
 
 export async function getProfile() {

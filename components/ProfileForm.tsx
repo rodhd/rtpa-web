@@ -10,8 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
-import { updateProfile } from "@/lib/profiles/updateProfile";
-import { profileFormSchema, profileFormSchemaType } from "@/lib/profiles/profileFormSchema";
+import { updateProfile } from "@/app/actions/profiles/updateProfile";
+import { profileFormSchema, profileFormSchemaType } from "@/app/actions/profiles/profileFormSchema";
 import { useTransition } from "react";
 
 type additionalProps = {

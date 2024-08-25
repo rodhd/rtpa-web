@@ -1,6 +1,6 @@
 import { ProfileForm } from "@/components/ProfileForm";
-import { getClubs } from "@/lib/clubs/getClubs";
-import { getProfile } from "@/lib/profiles/getProfile";
+import { getClubs } from "@/app/actions/clubs/getClubs";
+import { getProfile } from "@/app/actions/profiles/getProfile";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
