@@ -1,46 +1,47 @@
 "use server"
 
 import { db } from "@/lib/db";
-import { Club, profileClubRoleSchema, profiles, profilesToClubs } from "@/lib/schema";
+import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs } from "@/lib/schema";
 import { createClient } from "@/lib/supabase/server";
 import { and, eq, notInArray } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { profileFormSchemaType } from "../lib/zodSchemas";
 
+
 export async function getClubs(): Promise<Club[] | null> {
-  const supabase = createClient();
+    const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    return null;
-  }
+    if (!user) {
+        return null;
+    }
 
-  const clubs = await db.query.clubs.findMany();
+    const clubs = await db.query.clubs.findMany();
 
-  return clubs;
+    return clubs;
 }
 export async function getProfile() {
-  const supabase = createClient();
+    const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    return;
-  }
+    if (!user) {
+        return;
+    }
 
-  const profile = await db.query.profiles.findFirst({
-    with: {
-      profilesToClubs: true
-    },
-    where: eq(profiles.id, user.id)
-  });
+    const profile = await db.query.profiles.findFirst({
+        with: {
+            profilesToClubs: true
+        },
+        where: eq(profiles.id, user.id)
+    });
 
-  return profile;
+    return profile;
 }
 export async function updateProfile(updateProfileFormData: profileFormSchemaType) {
     const supabase = createClient();
@@ -74,5 +75,27 @@ export async function updateProfile(updateProfileFormData: profileFormSchemaType
     });
 
     return profile;
+}
+export async function isProfileClubManager(clubId: string): Promise<boolean> {
+    const supabase = createClient();
+    
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        return false;
+    }
+
+    const isManager = await db.query.profilesToClubs.findFirst({
+        where: and(eq(profilesToClubs.profileId, user.id), eq(profilesToClubs.clubId, Number(clubId)), eq(profilesToClubs.role, profileClubRoleSchema.enum.manager))
+    });
+
+    if (!isManager) {
+        return false;
+    }
+
+    return true;
+
 }
 
