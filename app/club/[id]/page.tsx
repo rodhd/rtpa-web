@@ -1,4 +1,4 @@
-import { isProfileClubManager } from "@/app/actions";
+import { getClub, isProfileClubManager } from "@/app/actions";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -19,7 +19,10 @@ export default async function Page({ params }: { params: { id: string } }) {
         return redirect("/");
     }
 
+    const club = await getClub(params.id);
+
     return <div>
-        <h1>Club ID: {params.id}</h1>
+        <h1>{club?.name ?? ""}</h1>
+        <h2>{club?.website ?? ""}</h2>
     </div>
 }

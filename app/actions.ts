@@ -1,11 +1,11 @@
 "use server"
 
 import { db } from "@/lib/db";
-import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs } from "@/lib/schema";
+import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs } from "@/lib/schema";
 import { createClient } from "@/lib/supabase/server";
 import { and, eq, notInArray } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { profileFormSchemaType } from "../lib/zodSchemas";
+import { z } from "zod";
 
 
 export async function getClubs(): Promise<Club[] | null> {
@@ -22,6 +22,33 @@ export async function getClubs(): Promise<Club[] | null> {
     const clubs = await db.query.clubs.findMany();
 
     return clubs;
+}
+
+export async function getClub(id: string): Promise<Club | null> {
+    const supabase = createClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    const isNumber = z.coerce.number();
+    const idNumeric = isNumber.safeParse(id);
+
+    console.log(idNumeric)
+
+    if (!user || !idNumeric.success) {
+        return null;
+    }
+    
+    const club = await db.query.clubs.findFirst({
+        where: eq(clubs.id, idNumeric.data)
+    });
+
+    if(!club) {
+        return null;
+    }
+
+    return club;
 }
 export async function getProfile() {
     const supabase = createClient();
@@ -78,7 +105,7 @@ export async function updateProfile(updateProfileFormData: profileFormSchemaType
 }
 export async function isProfileClubManager(clubId: string): Promise<boolean> {
     const supabase = createClient();
-    
+
     const {
         data: { user },
     } = await supabase.auth.getUser();
