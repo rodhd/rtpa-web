@@ -1,20 +1,27 @@
+DO $$ BEGIN
+ CREATE TYPE "public"."profileClubRole" AS ENUM('member', 'manager');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "clubs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"address" text NOT NULL,
-	"location" "point",
 	"website" varchar(256)
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "profiles" (
 	"id" uuid NOT NULL,
 	"first_name" varchar(256),
-	"last_name" varchar(256)
+	"last_name" varchar(256),
+	CONSTRAINT "profiles_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "profiles_clubs" (
-	"profiles_id" uuid,
-	"club_id" integer,
+	"profiles_id" uuid NOT NULL,
+	"club_id" integer NOT NULL,
+	"role" "profileClubRole" NOT NULL,
 	CONSTRAINT "profiles_clubs_profiles_id_club_id_pk" PRIMARY KEY("profiles_id","club_id")
 );
 --> statement-breakpoint

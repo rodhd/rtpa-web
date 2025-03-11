@@ -9,7 +9,7 @@ import { z } from "zod";
 
 
 export async function getClubs(): Promise<Club[] | null> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const {
         data: { user },
@@ -25,7 +25,7 @@ export async function getClubs(): Promise<Club[] | null> {
 }
 
 export async function getClub(id: string): Promise<Club | null> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const {
         data: { user },
@@ -51,7 +51,7 @@ export async function getClub(id: string): Promise<Club | null> {
     return club;
 }
 export async function getProfile() {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const {
         data: { user },
@@ -71,7 +71,7 @@ export async function getProfile() {
     return profile;
 }
 export async function updateProfile(updateProfileFormData: profileFormSchemaType) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const {
         data: { user },
@@ -104,7 +104,7 @@ export async function updateProfile(updateProfileFormData: profileFormSchemaType
     return profile;
 }
 export async function isProfileClubManager(clubId: string): Promise<boolean> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const {
         data: { user },

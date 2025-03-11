@@ -1,5 +1,5 @@
 {
-  "id": "dbf9e7e7-34af-4537-bc3d-704679142f02",
+  "id": "7f5c89d3-a8cc-46ef-b276-62ab00a35caf",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -25,12 +25,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "location": {
-          "name": "location",
-          "type": "point",
-          "primaryKey": false,
-          "notNull": false
         },
         "website": {
           "name": "website",
@@ -70,7 +64,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "profiles_id_unique": {
+          "name": "profiles_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.profiles_clubs": {
       "name": "profiles_clubs",
@@ -80,13 +82,20 @@
           "name": "profiles_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "club_id": {
           "name": "club_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "profileClubRole",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -130,7 +139,16 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "public.profileClubRole": {
+      "name": "profileClubRole",
+      "schema": "public",
+      "values": [
+        "member",
+        "manager"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "_meta": {

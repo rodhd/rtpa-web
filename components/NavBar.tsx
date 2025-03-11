@@ -4,10 +4,8 @@ import { Button } from "./ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function NavBar() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser();
 
   return (<div className="w-full flex justify-between items-center p-3 text-sm">
     <Button variant="link" asChild>

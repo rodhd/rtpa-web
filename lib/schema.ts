@@ -7,7 +7,7 @@ export const profileClubRoleEnum = pgEnum('profileClubRole', ['member', 'manager
 export const profileClubRoleSchema = z.enum(profileClubRoleEnum.enumValues); 
 
 export const profiles = pgTable('profiles', {
-  id: uuid('id').notNull(),
+  id: uuid('id').notNull().unique(),
   firstName: varchar('first_name', { length: 256 }),
   lastName: varchar('last_name', { length: 256 })
 });
