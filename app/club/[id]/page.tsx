@@ -1,6 +1,6 @@
 import { getClub, getClubCourts, isProfileClubManager } from "@/app/actions";
 import { CourtsTable } from "@/components/club/CourtsTable";
-import { CourtsTableColumns } from "@/components/club/CourtsTableColumn";
+import { CourtsTableColumns } from "@/components/club/CourtsTableColumns";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 

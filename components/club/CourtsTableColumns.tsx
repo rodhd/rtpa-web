@@ -4,6 +4,15 @@ import { Court } from "@/lib/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "../ui/button";
+import { MoreHorizontal } from "lucide-react";
 
 export const CourtsTableColumns: ColumnDef<Court>[] = [
   {
@@ -70,4 +79,33 @@ export const CourtsTableColumns: ColumnDef<Court>[] = [
       return <Badge variant="outline" className={cn(style)}>{formatted}</Badge>
     }
   },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const court = row.original;
+      
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => console.log("Edit court")}>
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => console.log("Deactivate court")}>
+              Deactivate
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => console.log("Delete court")}>
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    }
+  }
 ]
