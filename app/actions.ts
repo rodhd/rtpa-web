@@ -1,9 +1,9 @@
 "use server"
 
 import { db } from "@/lib/db";
-import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs } from "@/lib/schema";
+import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs, courts, Court } from "@/lib/schema";
 import { createClient } from "@/lib/supabase/server";
-import { and, eq, notInArray } from "drizzle-orm";
+import { and, asc, eq, notInArray } from "drizzle-orm";
 import { profileFormSchemaType } from "../lib/zodSchemas";
 import { z } from "zod";
 
@@ -39,17 +39,18 @@ export async function getClub(id: string): Promise<Club | null> {
     if (!user || !idNumeric.success) {
         return null;
     }
-    
+
     const club = await db.query.clubs.findFirst({
         where: eq(clubs.id, idNumeric.data)
     });
 
-    if(!club) {
+    if (!club) {
         return null;
     }
 
     return club;
 }
+
 export async function getProfile() {
     const supabase = await createClient();
 
@@ -70,6 +71,7 @@ export async function getProfile() {
 
     return profile;
 }
+
 export async function updateProfile(updateProfileFormData: profileFormSchemaType) {
     const supabase = await createClient();
 
@@ -103,6 +105,7 @@ export async function updateProfile(updateProfileFormData: profileFormSchemaType
 
     return profile;
 }
+
 export async function isProfileClubManager(clubId: string): Promise<boolean> {
     const supabase = await createClient();
 
@@ -114,11 +117,11 @@ export async function isProfileClubManager(clubId: string): Promise<boolean> {
         return false;
     }
 
-    const isManager = await db.query.profilesToClubs.findFirst({
+    const isClubManager = await db.query.profilesToClubs.findFirst({
         where: and(eq(profilesToClubs.profileId, user.id), eq(profilesToClubs.clubId, Number(clubId)), eq(profilesToClubs.role, profileClubRoleSchema.enum.manager))
     });
 
-    if (!isManager) {
+    if (!isClubManager) {
         return false;
     }
 
@@ -126,3 +129,33 @@ export async function isProfileClubManager(clubId: string): Promise<boolean> {
 
 }
 
+export async function IsManager(): Promise<number | undefined> {
+    const supabase = await createClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        return;
+    }
+
+    const { clubId } = await db.query.profilesToClubs.findFirst({
+        where: and(eq(profilesToClubs.profileId, user.id), eq(profilesToClubs.role, profileClubRoleSchema.enum.manager))
+    }) || {};
+
+    if (!clubId) {
+        return;
+    }
+
+    return clubId;
+}
+
+export async function getClubCourts(clubId: string): Promise<Court[]> {
+    const clubCourts = await db.query.courts.findMany({
+        where: and(eq(courts.clubId, Number(clubId))),
+        orderBy: [asc(courts.name)]
+    });
+
+    return clubCourts;
+}

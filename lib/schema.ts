@@ -13,9 +13,9 @@ export const profiles = pgTable('profiles', {
 });
 
 export const selectProfilesSchema = createSelectSchema(profiles);
-export type Profile = typeof profiles.$inferSelect
+export type Profile = typeof profiles.$inferSelect;
 export const insertProfilesSchema = createInsertSchema(profiles);
-export type ProfileUpdate = typeof profiles.$inferInsert
+export type ProfileUpdate = typeof profiles.$inferInsert;
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
   profilesToClubs: many(profilesToClubs)
@@ -33,7 +33,8 @@ export const selectClubsSchema = createSelectSchema(clubs);
 export type Club = typeof clubs.$inferSelect
 
 export const clubssRelations = relations(clubs, ({ many }) => ({
-  profilesToClubs: many(profilesToClubs)
+  profilesToClubs: many(profilesToClubs),
+  courts: many(courts)
 }));
 
 export const profilesToClubs = pgTable('profiles_clubs', {
@@ -57,3 +58,33 @@ export const profilesToClubsRelations = relations(profilesToClubs, ({ one }) => 
     references: [clubs.id]
   })
 }))
+
+export const courtTypeEnum = pgEnum('courtType', ['tennis', 'paddel']);
+export const courtTypeSchema = z.enum(courtTypeEnum.enumValues); 
+
+export const courtSurfaceEnum = pgEnum('courtSurface', ['hard', 'clay', 'grass', 'carpet']);
+export const courtSurfaceSchema = z.enum(courtSurfaceEnum.enumValues); 
+
+export const courtLocationEnum = pgEnum('courtLocation', ['outdoor', 'indoor']);
+export const courtLocationSchema = z.enum(courtSurfaceEnum.enumValues);
+
+export const courts = pgTable('courts', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  type: courtTypeEnum('type').notNull(),
+  surface: courtSurfaceEnum('surface').notNull(),
+  location: courtLocationEnum('location').notNull(),
+  clubId: integer('club_id').references(() => clubs.id).notNull()
+});
+
+export const courtsRelations = relations(courts, ({ one }) => ({
+  club: one(clubs, {
+    fields: [courts.clubId],
+    references: [clubs.id]
+  })
+}));
+
+export const selectCourtsSchema = createSelectSchema(courts);
+export type Court = typeof courts.$inferSelect;
+export const insertCourtsSchema = createInsertSchema(courts);
+export type CourtUpdate = typeof courts.$inferInsert;
