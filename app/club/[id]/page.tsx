@@ -1,18 +1,16 @@
 import { getClub, getClubCourts, isProfileClubManager } from "@/app/actions";
 import { CourtsTable } from "@/components/club/CourtsTable";
 import { CourtsTableColumns } from "@/components/club/CourtsTableColumns";
-import { createClient } from "@/lib/supabase/server";
+import { useUser } from "@clerk/nextjs";
+
 import { redirect } from "next/navigation";
 
 export default async function Page({ params }: { params: { id: string } }) {
-    const supabase = await createClient();
     const { id } = await params;
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const { isSignedIn, user, isLoaded } = useUser()
 
     if (!user) {
-        return redirect("/login");
+        return redirect("/");
     }
 
     const isClubManager = await isProfileClubManager(id);

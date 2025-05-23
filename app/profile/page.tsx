@@ -1,18 +1,14 @@
 import { ProfileForm } from "@/components/ProfileForm";
 import { getClubs } from "../actions";
 import { getProfile } from "../actions";
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 export default async function Profile() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = useUser()
 
   if (!user) {
-    return redirect("/login");
+    return redirect("/");
   }
 
   let profile = await getProfile();

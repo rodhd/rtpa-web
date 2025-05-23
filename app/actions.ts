@@ -2,18 +2,14 @@
 
 import { db } from "@/lib/db";
 import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs, courts, Court } from "@/lib/schema";
-import { createClient } from "@/lib/supabase/server";
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { and, asc, eq, notInArray } from "drizzle-orm";
 import { profileFormSchemaType } from "../lib/zodSchemas";
 import { z } from "zod";
 
 
 export async function getClubs(): Promise<Club[] | null> {
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const user = await currentUser()
 
     if (!user) {
         return null;
@@ -25,11 +21,7 @@ export async function getClubs(): Promise<Club[] | null> {
 }
 
 export async function getClub(id: string): Promise<Club | null> {
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const user = await currentUser()
 
     const isNumber = z.coerce.number();
     const idNumeric = isNumber.safeParse(id);
@@ -52,11 +44,7 @@ export async function getClub(id: string): Promise<Club | null> {
 }
 
 export async function getProfile() {
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const user = await currentUser()
 
     if (!user) {
         return;
@@ -73,11 +61,7 @@ export async function getProfile() {
 }
 
 export async function updateProfile(updateProfileFormData: profileFormSchemaType) {
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const user = await currentUser()
 
     if (!user) {
         return;
@@ -107,11 +91,7 @@ export async function updateProfile(updateProfileFormData: profileFormSchemaType
 }
 
 export async function isProfileClubManager(clubId: string): Promise<boolean> {
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const user = await currentUser()
 
     if (!user) {
         return false;
@@ -130,11 +110,7 @@ export async function isProfileClubManager(clubId: string): Promise<boolean> {
 }
 
 export async function IsManager(): Promise<number | undefined> {
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const user = await currentUser()
 
     if (!user) {
         return;
