@@ -46,6 +46,8 @@ export const profilesToClubs = pgTable('profiles_clubs', {
   pk: primaryKey({ columns: [t.profileId, t.clubId] }),
 }),);
 
+export const selectProfileToClubsSchema = createSelectSchema(profilesToClubs);
+export type ProfileToClub = typeof profilesToClubs.$inferSelect;
 export const insertProfilesToClubsSchema = createInsertSchema(profilesToClubs);
 
 export const profilesToClubsRelations = relations(profilesToClubs, ({ one }) => ({
