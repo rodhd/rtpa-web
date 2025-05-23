@@ -1,5 +1,5 @@
 {
-  "id": "8006e648-f5d7-4387-a30c-a409ab5c50aa",
+  "id": "664104c3-5294-4648-a85c-8c91ff513b98",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -36,7 +36,10 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.courts": {
       "name": "courts",
@@ -99,7 +102,10 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.profiles": {
       "name": "profiles",
@@ -107,7 +113,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -135,7 +141,10 @@
             "id"
           ]
         }
-      }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.profiles_clubs": {
       "name": "profiles_clubs",
@@ -143,7 +152,7 @@
       "columns": {
         "profiles_id": {
           "name": "profiles_id",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -199,7 +208,10 @@
           ]
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -240,6 +252,9 @@
   },
   "schemas": {},
   "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
   "_meta": {
     "columns": {},
     "schemas": {},

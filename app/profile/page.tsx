@@ -1,17 +1,17 @@
 import { ProfileForm } from "@/components/ProfileForm";
 import { getClubs } from "../actions";
-import { getOrCreateProfile } from "../actions";
+import { getProfile } from "../actions";
 import { redirect } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { auth, currentUser } from '@clerk/nextjs/server'
 
 export default async function Profile() {
-  const { user } = useUser()
+  const user  = await currentUser();
 
   if (!user) {
     return redirect("/");
   }
 
-  let profile = await getOrCreateProfile();
+  let profile = await getProfile();
   const clubs = await getClubs();
   
   return (

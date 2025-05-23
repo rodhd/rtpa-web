@@ -1,13 +1,13 @@
 import { getClub, getClubCourts, isProfileClubManager } from "@/app/actions";
 import { CourtsTable } from "@/components/club/CourtsTable";
 import { CourtsTableColumns } from "@/components/club/CourtsTableColumns";
-import { useUser } from "@clerk/nextjs";
+import { auth, currentUser } from '@clerk/nextjs/server'
 
 import { redirect } from "next/navigation";
 
 export default async function Page({ params }: { params: { id: string } }) {
     const { id } = await params;
-    const { isSignedIn, user, isLoaded } = useUser()
+    const user = currentUser();
 
     if (!user) {
         return redirect("/");

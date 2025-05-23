@@ -47,7 +47,7 @@ export async function getClub(id: string): Promise<Club | null> {
     return club;
 }
 
-export async function getOrCreateProfile(): Promise<ProfileWithClubs | undefined> {
+export async function getProfile(): Promise<ProfileWithClubs | undefined> {
     const user = await currentUser()
 
     if (!user) {
