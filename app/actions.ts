@@ -1,11 +1,15 @@
 "use server"
 
 import { db } from "@/lib/db";
-import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs, courts, Court } from "@/lib/schema";
+import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs, courts, Court, Profile, ProfileToClub } from "@/lib/schema";
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { and, asc, eq, notInArray } from "drizzle-orm";
 import { profileFormSchemaType } from "../lib/zodSchemas";
 import { z } from "zod";
+
+type ProfileWithClubs = Profile & {
+    profilesToClubs: ProfileToClub[]
+};
 
 
 export async function getClubs(): Promise<Club[] | null> {
@@ -43,19 +47,32 @@ export async function getClub(id: string): Promise<Club | null> {
     return club;
 }
 
-export async function getProfile() {
+export async function getOrCreateProfile(): Promise<ProfileWithClubs | undefined> {
     const user = await currentUser()
 
     if (!user) {
         return;
     }
 
-    const profile = await db.query.profiles.findFirst({
+    let profile;
+    profile = await db.query.profiles.findFirst({
         with: {
             profilesToClubs: true
         },
         where: eq(profiles.id, user.id)
     });
+
+    if (!profile) {
+        await db.insert(profiles)
+            .values({ id: user.id, firstName: user.firstName, lastName: user.lastName });
+
+        profile = await db.query.profiles.findFirst({
+        with: {
+            profilesToClubs: true
+        },
+        where: eq(profiles.id, user.id)
+    });
+    }
 
     return profile;
 }
