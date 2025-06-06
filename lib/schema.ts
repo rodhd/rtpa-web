@@ -26,7 +26,8 @@ export const clubs = pgTable('clubs', {
   name: text('name').notNull(),
   address: text('address').notNull(),
   // location: point('location'),
-  website: varchar('website', { length: 256 })
+  website: varchar('website', { length: 256 }), 
+  imageUrl: varchar('image_url', { length: 256 }),
 });
 
 export const selectClubsSchema = createSelectSchema(clubs);

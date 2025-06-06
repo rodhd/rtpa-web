@@ -15,6 +15,13 @@
       "when": 1748013960386,
       "tag": "0001_seed-clubs",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749221999355,
+      "tag": "0002_loud_george_stacy",
+      "breakpoints": true
     }
   ]
 }
