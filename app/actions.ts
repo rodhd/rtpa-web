@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs, courts, Court, Profile, ProfileToClub } from "@/lib/schema";
 import { auth, currentUser } from '@clerk/nextjs/server'
-import { and, asc, eq, notInArray } from "drizzle-orm";
+import { and, asc, eq, notInArray, count } from "drizzle-orm";
 import { profileFormSchemaType } from "../lib/zodSchemas";
 import { z } from "zod";
 
@@ -12,7 +12,7 @@ type ProfileWithClubs = Profile & {
 };
 
 
-export async function getClubs(): Promise<Club[] | null> {
+export async function getClubs(): Promise<(Club & { courtCounts: Record<string, number> })[] | null> {
     const user = await currentUser()
 
     if (!user) {
@@ -20,8 +20,12 @@ export async function getClubs(): Promise<Club[] | null> {
     }
 
     const clubs = await db.query.clubs.findMany();
+    const courtCounts = await getCourtCountsByClub();
 
-    return clubs;
+    return clubs.map(club => ({
+        ...club,
+        courtCounts: courtCounts[club.id] || {}
+    }));
 }
 
 export async function getClub(id: string): Promise<Club | null> {
@@ -67,14 +71,14 @@ export async function getProfile(): Promise<ProfileWithClubs | undefined> {
             .values({ id: user.id, firstName: user.firstName, lastName: user.lastName });
 
         profile = await db.query.profiles.findFirst({
-        with: {
-            profilesToClubs: true
-        },
-        where: eq(profiles.id, user.id)
-    });
+            with: {
+                profilesToClubs: true
+            },
+            where: eq(profiles.id, user.id)
+        });
     }
 
-    return profile;
+    return profile as ProfileWithClubs;
 }
 
 export async function updateProfile(updateProfileFormData: profileFormSchemaType) {
@@ -151,4 +155,23 @@ export async function getClubCourts(clubId: string): Promise<Court[]> {
     });
 
     return clubCourts;
+}
+
+export async function getCourtCountsByClub(): Promise<Record<number, Record<string, number>>> {
+    const courtsByClub = await db.select({
+        clubId: courts.clubId,
+        type: courts.type,
+        count: count()
+    }).from(courts).groupBy(courts.clubId, courts.type);
+
+    const counts: Record<number, Record<string, number>> = {};
+
+    courtsByClub.forEach(court => {
+        if (!counts[court.clubId]) {
+            counts[court.clubId] = {};
+        }
+        counts[court.clubId][court.type] = court.count;
+    });
+
+    return counts;
 }
