@@ -10,21 +10,21 @@ import { CourtCard } from "@/components/club/CourtCard";
 
 interface ClubPageProps {
   params: {
-    id: string;
+    clubId: string;
   };
 }
 
 export default async function ClubPage({ params }: ClubPageProps) {
-  const { id } = await params;
+  const { clubId } = await params;
   const club = await db.query.clubs.findFirst({
-    where: eq(clubs.id, parseInt(id)),
+    where: eq(clubs.id, parseInt(clubId)),
   });
 
   if (!club) {
     notFound();
   }
 
-  const courts = await getClubCourts(id);
+  const courts = await getClubCourts(club.id.toString());
   const tennisCourts = courts.filter(court => court.type === 'tennis');
   const paddelCourts = courts.filter(court => court.type === 'paddel');
 

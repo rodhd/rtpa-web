@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, point, serial, text, varchar, uuid, integer, primaryKey, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, point, serial, text, varchar, uuid, integer, primaryKey, pgEnum, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
@@ -91,3 +91,28 @@ export const selectCourtsSchema = createSelectSchema(courts);
 export type Court = typeof courts.$inferSelect;
 export const insertCourtsSchema = createInsertSchema(courts);
 export type CourtUpdate = typeof courts.$inferInsert;
+
+export const reservations = pgTable('reservations', {
+  id: serial('id').primaryKey(),
+  courtId: integer('court_id').references(() => courts.id).notNull(),
+  profileId: varchar('profile_id').references(() => profiles.id).notNull(),
+  startDate: timestamp('start_date').notNull(),
+  endDate: timestamp('end_date').notNull(),
+  deletedAt: timestamp('deleted_at'),
+});
+
+export const selectReservationsSchema = createSelectSchema(reservations);
+export type Reservation = typeof reservations.$inferSelect;
+export const insertReservationsSchema = createInsertSchema(reservations);
+export type ReservationUpdate = typeof reservations.$inferInsert;
+
+export const reservationsRelations = relations(reservations, ({ one }) => ({
+  court: one(courts, {
+    fields: [reservations.courtId],
+    references: [courts.id]
+  }),
+  profile: one(profiles, {
+    fields: [reservations.profileId],
+    references: [profiles.id]
+  })
+}));

@@ -5,22 +5,22 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 
 import { redirect } from "next/navigation";
 
-export default async function Page({ params }: { params: { id: string } }) {
-    const { id } = await params;
+export default async function Page({ params }: { params: { clubId: string } }) {
+    const { clubId } = await params;
     const user = currentUser();
 
     if (!user) {
         return redirect("/");
     }
 
-    const isClubManager = await isProfileClubManager(id);
+    const isClubManager = await isProfileClubManager(clubId);
 
     if (!isClubManager) {
         return redirect("/");
     }
 
-    const club = await getClub(id);
-    const clubCourts = await getClubCourts(id);
+    const club = await getClub(clubId);
+    const clubCourts = await getClubCourts(clubId);
 
     return <div className="flex flex-col gap-8 items-center">
         <h1 className="text-2xl">{club?.name ?? ""}</h1>
