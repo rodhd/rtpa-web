@@ -2,7 +2,7 @@ import { Club } from "@/lib/schema";
 import TennisClubCard from "./TennisClubCard";
 
 interface TennisClubGridProps {
-    clubs: Club[];
+    clubs: (Club & { courtCounts: Record<string, number> })[];
 }
 
 export default function TennisClubGrid({ clubs }: TennisClubGridProps) {

@@ -15,15 +15,16 @@ interface ClubPageProps {
 }
 
 export default async function ClubPage({ params }: ClubPageProps) {
+  const { id } = await params;
   const club = await db.query.clubs.findFirst({
-    where: eq(clubs.id, parseInt(params.id)),
+    where: eq(clubs.id, parseInt(id)),
   });
 
   if (!club) {
     notFound();
   }
 
-  const courts = await getClubCourts(params.id);
+  const courts = await getClubCourts(id);
   const tennisCourts = courts.filter(court => court.type === 'tennis');
   const paddelCourts = courts.filter(court => court.type === 'paddel');
 
