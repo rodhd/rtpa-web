@@ -1,4 +1,32 @@
+import { ReservationSlots } from "@/components/court/ReservationSlots";
+import { db } from "@/lib/db";
+import { courts } from "@/lib/schema";
+import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
+import { auth } from '@clerk/nextjs/server';
+
 export default async function CourtPage({ params }: { params: { clubId: string, courtId: string } }) {
-    const { clubId, courtId } = await params;
-    return <div>CourtPage {courtId}</div>;
+  const { userId } = await auth();
+  const { clubId, courtId } = await params;
+
+  if (!userId) {
+    return redirect("/");
+  }
+
+  const court = await db.query.courts.findFirst({
+    where: eq(courts.id, parseInt(courtId)),
+  });
+
+  if (!court) {
+    return redirect("/");
+  }
+
+  return (
+    <div className="flex w-full flex-col gap-10 items-center">
+      <h1 className="text-3xl">Make a Reservation</h1>
+      <div className="w-full max-w-6xl">
+        <ReservationSlots court={court} />
+      </div>
+    </div>
+  );
 }

@@ -1,8 +1,8 @@
 "use server"
 
 import { db } from "@/lib/db";
-import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs, courts, Court, Profile, ProfileToClub } from "@/lib/schema";
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs, courts, Court, Profile, ProfileToClub, reservations } from "@/lib/schema";
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { and, asc, eq, notInArray, count } from "drizzle-orm";
 import { profileFormSchemaType } from "../lib/zodSchemas";
 import { z } from "zod";
@@ -174,4 +174,33 @@ export async function getCourtCountsByClub(): Promise<Record<number, Record<stri
     });
 
     return counts;
+}
+
+export async function createReservation(data: {
+  courtId: number;
+  startDate: Date;
+  endDate: Date;
+}) {
+  const { userId } = await auth();
+  
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
+  const profile = await db.query.profiles.findFirst({
+    where: eq(profiles.id, userId),
+  });
+
+  if (!profile) {
+    throw new Error("Profile not found");
+  }
+
+  const reservation = await db.insert(reservations).values({
+    courtId: data.courtId,
+    profileId: userId,
+    startDate: data.startDate,
+    endDate: data.endDate,
+  }).returning();
+
+  return reservation[0];
 }
