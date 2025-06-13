@@ -9,14 +9,18 @@ import {
   UserButton,
 } from '@clerk/nextjs'
 import { IsManager } from "@/app/actions";
+import { BackButton } from "./BackButton";
 
 export default async function NavBar() {
   const managerClubId = await IsManager();
 
   return (<div className="w-full flex justify-between items-center p-3 text-sm">
-    <Button variant="link" asChild>
-      <Link href="/">Home</Link>
-    </Button>
+    <div className="flex items-center gap-4">
+      <BackButton />
+      <Button variant="link" asChild>
+        <Link href="/">Home</Link>
+      </Button>
+    </div>
     <div className="flex flex-row justify-between items-center gap-4">
       {!!managerClubId && (
         <Button variant="secondary" asChild>

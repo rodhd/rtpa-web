@@ -23,7 +23,7 @@ export default async function CourtPage({ params }: { params: { clubId: string, 
 
   return (
     <div className="flex w-full flex-col gap-10 items-center">
-    <h1 className="text-3xl">{court.name}</h1>
+      <h1 className="text-3xl">{court.name}</h1>
       <h2 className="text-2xl">Make a Reservation</h2>
       <div className="w-full max-w-6xl">
         <ReservationSlots court={court} />
