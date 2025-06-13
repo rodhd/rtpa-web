@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { Club, profileClubRoleEnum, profileClubRoleSchema, profiles, profilesToClubs, clubs, courts, Court, Profile, ProfileToClub, reservations } from "@/lib/schema";
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { and, asc, eq, notInArray, count } from "drizzle-orm";
+import { and, asc, eq, notInArray, count, or, lte, gt, lt, gte, isNull } from "drizzle-orm";
 import { profileFormSchemaType } from "../lib/zodSchemas";
 import { z } from "zod";
 
@@ -195,6 +195,32 @@ export async function createReservation(data: {
     throw new Error("Profile not found");
   }
 
+  // Check for overlapping reservations
+  const overlappingReservations = await db.query.reservations.findMany({
+    where: and(
+      eq(reservations.courtId, data.courtId),
+      isNull(reservations.deletedAt),
+      or(
+        and(
+          lte(reservations.startDate, data.startDate),
+          gt(reservations.endDate, data.startDate)
+        ),
+        and(
+          lt(reservations.startDate, data.endDate),
+          gte(reservations.endDate, data.endDate)
+        ),
+        and(
+          gte(reservations.startDate, data.startDate),
+          lte(reservations.endDate, data.endDate)
+        )
+      )
+    ),
+  });
+
+  if (overlappingReservations.length > 0) {
+    throw new Error("This time slot overlaps with an existing reservation");
+  }
+
   const reservation = await db.insert(reservations).values({
     courtId: data.courtId,
     profileId: userId,
@@ -203,4 +229,30 @@ export async function createReservation(data: {
   }).returning();
 
   return reservation[0];
+}
+
+export async function getCourtReservations(courtId: number, startDate: Date, endDate: Date) {
+  const existingReservations = await db.query.reservations.findMany({
+    where: and(
+      eq(reservations.courtId, courtId),
+      isNull(reservations.deletedAt),
+      // Check if the reservation overlaps with the given date range
+      or(
+        and(
+          lte(reservations.startDate, startDate),
+          gt(reservations.endDate, startDate)
+        ),
+        and(
+          lt(reservations.startDate, endDate),
+          gte(reservations.endDate, endDate)
+        ),
+        and(
+          gte(reservations.startDate, startDate),
+          lte(reservations.endDate, endDate)
+        )
+      )
+    ),
+  });
+
+  return existingReservations;
 }
