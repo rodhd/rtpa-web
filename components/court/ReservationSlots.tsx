@@ -11,6 +11,7 @@ import { z } from "zod";
 import { Court } from "@/lib/schema";
 import { createReservation } from "@/app/actions";
 import { useTransition } from "react";
+import { ReservationForm } from "./ReservationForm";
 
 const reservationFormSchema = z.object({
   startDate: z.date(),
@@ -27,6 +28,7 @@ export function ReservationSlots({ court }: ReservationSlotsProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
 
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(reservationFormSchema),
@@ -38,7 +40,7 @@ export function ReservationSlots({ court }: ReservationSlotsProps) {
 
   const generateTimeSlots = () => {
     const slots = [];
-    for (let hour = 0; hour < 24; hour++) {
+    for (let hour = 8; hour < 22; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
         slots.push(setMinutes(setHours(new Date(), hour), minute));
       }
@@ -48,6 +50,16 @@ export function ReservationSlots({ court }: ReservationSlotsProps) {
 
   const timeSlots = generateTimeSlots();
   const dates = [selectedDate, addDays(selectedDate, 1), addDays(selectedDate, 2)];
+
+  const handleSuccess = () => {
+    setSelectedTime(null);
+    setOpenPopoverId(null);
+  }
+
+  const handleCancel = () => {
+    setSelectedTime(null);
+    setOpenPopoverId(null);
+  }
 
   const onSubmit = async (values: ReservationFormValues) => {
     startTransition(async () => {
@@ -73,38 +85,44 @@ export function ReservationSlots({ court }: ReservationSlotsProps) {
               {format(date, "EEEE, MMMM d")}
             </h3>
             <div className="space-y-2">
-              {timeSlots.map((time, timeIndex) => (
-                <Popover key={timeIndex}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                      onClick={() => {
-                        setSelectedTime(time);
-                        form.setValue("startDate", setMinutes(setHours(date, time.getHours()), time.getMinutes()));
-                        form.setValue("endDate", setMinutes(setHours(date, time.getHours() + 1), time.getMinutes()));
-                      }}
-                    >
-                      {format(time, "HH:mm")}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80">
-                    <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="text-sm">
-                          <p>Court: {court.name}</p>
-                          <p>Type: {court.type}</p>
-                          <p>Surface: {court.surface}</p>
-                          <p>Location: {court.location}</p>
-                        </div>
-                        <Button type="submit" className="w-full" disabled={isPending}>
-                          {isPending ? "Creating..." : "Make Reservation"}
-                        </Button>
-                      </form>
-                    </Form>
-                  </PopoverContent>
-                </Popover>
-              ))}
+              {timeSlots.map((time, timeIndex) => {
+                const popoverId = `${dateIndex}-${timeIndex}`;
+                return (
+                  <Popover 
+                    key={timeIndex} 
+                    open={openPopoverId === popoverId}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        setOpenPopoverId(null);
+                        setSelectedTime(null);
+                      }
+                    }}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                        onClick={() => {
+                          setSelectedTime(time);
+                          setOpenPopoverId(popoverId);
+                          form.setValue("startDate", setMinutes(setHours(date, time.getHours()), time.getMinutes()));
+                          form.setValue("endDate", setMinutes(setHours(date, time.getHours() + 1), time.getMinutes()));
+                        }}
+                      >
+                        {format(time, "HH:mm")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                      <ReservationForm 
+                        court={court} 
+                        startTime={time} 
+                        onSuccess={handleSuccess} 
+                        onCancel={handleCancel} 
+                      />
+                    </PopoverContent>
+                  </Popover>
+                );
+              })}
             </div>
           </div>
         ))}
