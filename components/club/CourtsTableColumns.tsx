@@ -109,9 +109,9 @@ export const CourtsTableColumns: ColumnDef<Court>[] = [
             <DropdownMenuItem onClick={() => toggleCourtStatus(court.id, !court.active, court.clubId)}>
               {court.active ? "Deactivate" : "Activate"}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Delete court")}>
+            {/* <DropdownMenuItem onClick={() => console.log("Delete court")}>
               Delete
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       )
