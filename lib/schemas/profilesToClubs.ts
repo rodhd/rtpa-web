@@ -1,5 +1,5 @@
-import { pgTable, varchar, integer, primaryKey } from "drizzle-orm/pg-core";
-import { relations, pgEnum } from "drizzle-orm";
+import { pgTable, varchar, integer, primaryKey, pgEnum } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createSelectSchema, createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
