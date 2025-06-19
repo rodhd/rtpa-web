@@ -24,7 +24,7 @@ export default async function NavBar() {
     <div className="flex flex-row justify-between items-center gap-4">
       {!!managerClubId && (
         <Button variant="secondary" asChild>
-          <Link href={`/club/${managerClubId}`}>Club</Link>
+          <Link href={`/clubs/${managerClubId}/manage`}>Club</Link>
         </Button>)}
       <Button variant="secondary" asChild>
         <Link href="/profile">Profile</Link>
