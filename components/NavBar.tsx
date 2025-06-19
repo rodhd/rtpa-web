@@ -27,6 +27,9 @@ export default async function NavBar() {
           <Link href={`/clubs/${managerClubId}/manage`}>Club</Link>
         </Button>)}
       <Button variant="secondary" asChild>
+        <Link href="/reservations">Reservations</Link>
+      </Button>
+      <Button variant="secondary" asChild>
         <Link href="/profile">Profile</Link>
       </Button>
       <SignedOut>

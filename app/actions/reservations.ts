@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { reservations, profiles, courts } from "@/lib/schema";
 import { auth } from '@clerk/nextjs/server';
 import { and, or, lte, gt, lt, gte, isNull, eq, inArray } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 export async function createReservation(data: {
   courtId: number;
@@ -103,4 +104,54 @@ export async function getClubReservationsForPeriod(
   });
 
   return clubReservations;
+}
+
+export async function getUserReservations() {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
+  const userReservations = await db.query.reservations.findMany({
+    where: and(
+      eq(reservations.profileId, userId),
+      isNull(reservations.deletedAt)
+    ),
+    with: {
+      court: {
+        with: {
+          club: true,
+        },
+      },
+    },
+    orderBy: (reservations, { desc }) => [desc(reservations.startDate)],
+  });
+
+  return userReservations;
+}
+
+export async function deleteReservation(reservationId: number) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
+  const reservation = await db.query.reservations.findFirst({
+    where: eq(reservations.id, reservationId),
+  });
+
+  if (!reservation) {
+    throw new Error("Reservation not found");
+  }
+
+  if (reservation.profileId !== userId) {
+    throw new Error("Not authorized to delete this reservation");
+  }
+
+  await db
+    .update(reservations)
+    .set({ deletedAt: new Date() })
+    .where(eq(reservations.id, reservationId));
+
+  revalidatePath("/reservations");
 } 
