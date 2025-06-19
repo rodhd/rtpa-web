@@ -36,7 +36,7 @@ export function CourtCard({ court, reservations }: CourtCardProps) {
               e.stopPropagation();
             }}
           >
-            <Button variant="ghost" size="icon" className="w-8 h-8">
+            <Button variant="outline" size="icon" className="w-8 h-8">
               <ChevronsUpDown className="h-4 w-4" />
               <span className="sr-only">Toggle</span>
             </Button>
