@@ -11,3 +11,12 @@ export const profileFormSchema = z.object({
 });
 
 export type profileFormSchemaType = z.infer<typeof profileFormSchema>;
+
+export const createCourtSchema = z.object({
+    name: z.string().min(3, "Court name must be at least 3 characters long"),
+    type: z.enum(["tennis", "paddel"]),
+    surface: z.enum(["hard", "clay", "grass", "carpet"]),
+    location: z.enum(["outdoor", "indoor"]),
+});
+
+export type createCourtSchemaType = z.infer<typeof createCourtSchema>;
