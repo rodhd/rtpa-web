@@ -20,8 +20,8 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { createCourtSchema, createCourtSchemaType } from "@/lib/zodSchemas";
-import { courtSurfaceEnum, courtLocationEnum, courtTypeEnum } from "@/lib/schemas/courts";
-import { createCourt } from "@/app/actions/courts";
+import { Court, courtSurfaceEnum, courtLocationEnum, courtTypeEnum } from "@/lib/schemas/courts";
+import { createCourt, updateCourt } from "@/app/actions/courts";
 import { useTransition } from "react";
 
 const surfaceColorMap: Record<string, string> = {
@@ -40,24 +40,32 @@ const locationColorMap: Record<string, string> = {
     outdoor: 'bg-amber-400',
 };
 
-export function CreateCourtForm({ clubId, closeDialog }: { clubId: string, closeDialog: () => void }) {
+export function CreateCourtForm({ clubId, closeDialog, court }: { clubId: string, closeDialog: () => void, court?: Court }) {
     const [isPending, startTransition] = useTransition();
+    const isEditMode = court !== undefined;
 
     const form = useForm<createCourtSchemaType>({
         resolver: zodResolver(createCourtSchema),
         defaultValues: {
-            name: "",
-            type: "tennis",
-            surface: "clay",
-            location: "outdoor",
+            name: court?.name ?? "",
+            type: court?.type ?? "tennis",
+            surface: court?.surface ?? "clay",
+            location: court?.location ?? "outdoor",
         },
     });
 
     const onSubmit = async (values: createCourtSchemaType) => {
         startTransition(async () => {
-            const result = await createCourt(clubId, values);
-            if (result?.success) {
-                closeDialog();
+            if (isEditMode) {
+                const result = await updateCourt(court.id, clubId, values);
+                if (result?.success) {
+                    closeDialog();
+                }
+            } else {
+                const result = await createCourt(clubId, values);
+                if (result?.success) {
+                    closeDialog();
+                }
             }
         });
     };
@@ -179,7 +187,7 @@ export function CreateCourtForm({ clubId, closeDialog }: { clubId: string, close
                 />
 
                 <Button type="submit" disabled={isPending} className="w-full">
-                    {isPending ? "Creating..." : "Create Court"}
+                    {isPending ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Court" : "Create Court")}
                 </Button>
             </form>
         </Form>

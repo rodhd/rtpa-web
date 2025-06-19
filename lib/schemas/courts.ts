@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, pgEnum, boolean } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createSelectSchema, createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -18,12 +18,13 @@ export const courts = pgTable('courts', {
   type: courtTypeEnum('type').notNull(),
   surface: courtSurfaceEnum('surface').notNull(),
   location: courtLocationEnum('location').notNull(),
-  clubId: integer('club_id').notNull()
+  clubId: integer('club_id').notNull(),
+  active: boolean("active").default(true).notNull(),
 });
 
 export const selectCourtsSchema = createSelectSchema(courts);
 export type Court = typeof courts.$inferSelect;
 export const insertCourtsSchema = createInsertSchema(courts);
-export type CourtUpdate = typeof courts.$inferInsert;
+export type NewCourt = typeof courts.$inferInsert;
 
 // Relations will be imported and defined in the main index or where needed 

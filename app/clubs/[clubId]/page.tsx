@@ -24,7 +24,8 @@ export default async function ClubPage({ params }: ClubPageProps) {
     notFound();
   }
 
-  const courts = await getClubCourts(club.id.toString());
+  const allCourts = await getClubCourts(club.id);
+  const courts = allCourts.filter(court => court.active);
   const tennisCourts = courts.filter(court => court.type === 'tennis');
   const paddelCourts = courts.filter(court => court.type === 'paddel');
 

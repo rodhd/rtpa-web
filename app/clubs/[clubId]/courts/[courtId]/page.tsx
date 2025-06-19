@@ -17,8 +17,8 @@ export default async function CourtPage({ params }: { params: { clubId: string, 
     where: eq(courts.id, parseInt(courtId)),
   });
 
-  if (!court) {
-    return redirect("/");
+  if (!court || !court.active) {
+    return redirect(`/clubs/${clubId}`);
   }
 
   return (

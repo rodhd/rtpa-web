@@ -21,7 +21,7 @@ export default async function Page({ params }: { params: { clubId: string } }) {
     }
 
     const club = await getClub(clubId);
-    const clubCourts = await getClubCourts(clubId);
+    const clubCourts = await getClubCourts(Number(clubId));
 
     return <div className="flex flex-col gap-8 items-center">
         <h1 className="text-2xl">{club?.name ?? ""}</h1>

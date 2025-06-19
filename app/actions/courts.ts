@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { courts } from "@/lib/schema";
-import { createCourtSchema } from "@/lib/zodSchemas";
+import { createCourtSchema, createCourtSchemaType } from "@/lib/zodSchemas";
 import { and, asc, count, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -35,15 +35,14 @@ export async function createCourt(
     }
 }
 
-export async function getClubCourts(clubId: string) {
+export async function getClubCourts(clubId: number) {
     const clubCourts = await db.query.courts.findMany({
-        where: and(eq(courts.clubId, Number(clubId))),
-        orderBy: [asc(courts.name)]
+        where: eq(courts.clubId, clubId),
     });
     return clubCourts;
 }
 
-export async function getCourtCountsByClub(): Promise<Record<number, Record<string, number>>> {
+export async function getCourtCountsByClub(clubId: number): Promise<Record<number, Record<string, number>>> {
     const courtsByClub = await db.select({
         clubId: courts.clubId,
         type: courts.type,
@@ -57,4 +56,34 @@ export async function getCourtCountsByClub(): Promise<Record<number, Record<stri
         counts[court.clubId][court.type] = court.count;
     });
     return counts;
+}
+
+export async function toggleCourtStatus(courtId: number, newStatus: boolean, clubId: number) {
+  await db.update(courts).set({ active: newStatus }).where(eq(courts.id, courtId));
+  revalidatePath(`/clubs/${clubId}/manage`);
+}
+
+export async function updateCourt(courtId: number, clubId: string, values: createCourtSchemaType) {
+  const parsedValues = createCourtSchema.safeParse(values);
+
+  if (!parsedValues.success) {
+    return {
+      error: "Invalid input",
+    }
+  }
+
+  try {
+    await db.update(courts).set(parsedValues.data).where(eq(courts.id, courtId));
+
+    revalidatePath(`/clubs/${clubId}/manage`);
+    revalidatePath(`/clubs/${clubId}/courts/${courtId}`);
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    return {
+      error: "Could not update court",
+    }
+  }
 } 

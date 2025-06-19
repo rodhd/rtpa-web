@@ -1,5 +1,6 @@
 "use client"
 
+import { toggleCourtStatus } from "@/app/actions/courts";
 import { Court } from "@/lib/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "../ui/badge";
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "../ui/button";
 import { MoreHorizontal } from "lucide-react";
+import { EditCourtDialog } from "./EditCourtDialog";
 
 export const CourtsTableColumns: ColumnDef<Court>[] = [
   {
@@ -80,6 +82,15 @@ export const CourtsTableColumns: ColumnDef<Court>[] = [
     }
   },
   {
+    accessorKey: "active",
+    header: () => <div className="font-bold">Status</div>,
+    cell: ({ row }) => {
+      const active = row.getValue("active");
+      const style = active ? "bg-green-500 text-white" : "bg-red-500 text-white";
+      return <Badge variant="outline" className={cn(style)}>{active ? "Active" : "Inactive"}</Badge>
+    }
+  },
+  {
     id: "actions",
     cell: ({ row }) => {
       const court = row.original;
@@ -94,11 +105,9 @@ export const CourtsTableColumns: ColumnDef<Court>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => console.log("Edit court")}>
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Deactivate court")}>
-              Deactivate
+            <EditCourtDialog court={court} />
+            <DropdownMenuItem onClick={() => toggleCourtStatus(court.id, !court.active, court.clubId)}>
+              {court.active ? "Deactivate" : "Activate"}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => console.log("Delete court")}>
               Delete
