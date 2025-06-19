@@ -24,8 +24,6 @@ import { courtSurfaceEnum, courtLocationEnum, courtTypeEnum } from "@/lib/schema
 import { createCourt } from "@/app/actions/courts";
 import { useTransition } from "react";
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
 const surfaceColorMap: Record<string, string> = {
     clay: 'bg-orange-600',
     grass: 'bg-green-600',
@@ -34,7 +32,7 @@ const surfaceColorMap: Record<string, string> = {
 
 const typeColorMap: Record<string, string> = {
     tennis: 'bg-yellow-400',
-    padel: 'bg-cyan-400',
+    paddel: 'bg-cyan-400',
 };
 
 const locationColorMap: Record<string, string> = {
@@ -92,7 +90,7 @@ export function CreateCourtForm({ clubId, closeDialog }: { clubId: string, close
                                     <SelectTrigger>
                                         <SelectValue>
                                             <div className="flex items-center gap-2">
-                                                <span>{capitalize(field.value)}</span>
+                                                <span className="capitalize">{field.value}</span>
                                                 <div className={`h-2 w-2 rounded-full ${typeColorMap[field.value]}`} />
                                             </div>
                                         </SelectValue>
@@ -102,7 +100,7 @@ export function CreateCourtForm({ clubId, closeDialog }: { clubId: string, close
                                     {courtTypeEnum.enumValues.map((type) => (
                                         <SelectItem key={type} value={type}>
                                             <div className="flex items-center gap-2">
-                                                <span>{capitalize(type)}</span>
+                                                <span className="capitalize">{type}</span>
                                                 <div className={`h-2 w-2 rounded-full ${typeColorMap[type]}`} />
                                             </div>
                                         </SelectItem>
@@ -125,7 +123,7 @@ export function CreateCourtForm({ clubId, closeDialog }: { clubId: string, close
                                     <SelectTrigger>
                                         <SelectValue>
                                             <div className="flex items-center gap-2">
-                                                <span>{capitalize(field.value)}</span>
+                                                <span className="capitalize">{field.value}</span>
                                                 <div className={`h-2 w-2 rounded-full ${surfaceColorMap[field.value]}`} />
                                             </div>
                                         </SelectValue>
@@ -135,7 +133,7 @@ export function CreateCourtForm({ clubId, closeDialog }: { clubId: string, close
                                     {courtSurfaceEnum.enumValues.map((surface) => (
                                         <SelectItem key={surface} value={surface}>
                                             <div className="flex items-center gap-2">
-                                                <span>{capitalize(surface)}</span>
+                                                <span className="capitalize">{surface}</span>
                                                 <div className={`h-2 w-2 rounded-full ${surfaceColorMap[surface]}`} />
                                             </div>
                                         </SelectItem>
@@ -158,7 +156,7 @@ export function CreateCourtForm({ clubId, closeDialog }: { clubId: string, close
                                     <SelectTrigger>
                                         <SelectValue>
                                             <div className="flex items-center gap-2">
-                                                <span>{capitalize(field.value)}</span>
+                                            <   span className="capitalize">{field.value}</span>
                                                 <div className={`h-2 w-2 rounded-full ${locationColorMap[field.value]}`} />
                                             </div>
                                         </SelectValue>
@@ -168,7 +166,7 @@ export function CreateCourtForm({ clubId, closeDialog }: { clubId: string, close
                                     {courtLocationEnum.enumValues.map((location) => (
                                         <SelectItem key={location} value={location}>
                                             <div className="flex items-center gap-2">
-                                                <span>{capitalize(location)}</span>
+                                            <span className="capitalize">{location}</span>
                                                 <div className={`h-2 w-2 rounded-full ${locationColorMap[location]}`} />
                                             </div>
                                         </SelectItem>
