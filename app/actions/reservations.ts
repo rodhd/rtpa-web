@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { reservations, profiles } from "@/lib/schema";
+import { reservations, profiles, courts } from "@/lib/schema";
 import { auth } from '@clerk/nextjs/server';
-import { and, or, lte, gt, lt, gte, isNull, eq } from "drizzle-orm";
+import { and, or, lte, gt, lt, gte, isNull, eq, inArray } from "drizzle-orm";
 
 export async function createReservation(data: {
   courtId: number;
@@ -76,4 +76,31 @@ export async function getCourtReservations(courtId: number, startDate: Date, end
     ),
   });
   return existingReservations;
+}
+
+export async function getClubReservationsForPeriod(
+  clubId: number,
+  startDate: Date,
+  endDate: Date
+) {
+  const activeCourts = await db.query.courts.findMany({
+    where: and(eq(courts.clubId, clubId), eq(courts.active, true)),
+  });
+
+  if (activeCourts.length === 0) {
+    return [];
+  }
+
+  const courtIds = activeCourts.map((court) => court.id);
+
+  const clubReservations = await db.query.reservations.findMany({
+    where: and(
+      inArray(reservations.courtId, courtIds),
+      isNull(reservations.deletedAt),
+      gte(reservations.startDate, startDate),
+      lte(reservations.endDate, endDate)
+    ),
+  });
+
+  return clubReservations;
 } 

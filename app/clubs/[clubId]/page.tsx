@@ -1,6 +1,7 @@
 import { getClubCourts } from "@/app/actions";
+import { getClubReservationsForPeriod } from "@/app/actions/reservations";
 import { db } from "@/lib/db";
-import { clubs } from "@/lib/schema";
+import { clubs, Reservation } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -28,6 +29,26 @@ export default async function ClubPage({ params }: ClubPageProps) {
   const courts = allCourts.filter(court => court.active);
   const tennisCourts = courts.filter(court => court.type === 'tennis');
   const paddelCourts = courts.filter(court => court.type === 'paddel');
+
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(startDate.getDate() + 3);
+  endDate.setHours(0, 0, 0, 0);
+
+  const reservations = await getClubReservationsForPeriod(
+    club.id,
+    startDate,
+    endDate
+  );
+
+  const reservationsByCourt = reservations.reduce((acc, reservation) => {
+    const courtId = reservation.courtId;
+    if (!acc[courtId]) {
+      acc[courtId] = [];
+    }
+    acc[courtId].push(reservation);
+    return acc;
+  }, {} as Record<number, Reservation[]>);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
@@ -68,7 +89,11 @@ export default async function ClubPage({ params }: ClubPageProps) {
         <h2 className="text-2xl font-semibold">Tennis Courts</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {tennisCourts.map((court) => (
-            <CourtCard key={court.id} court={court} />
+            <CourtCard
+              key={court.id}
+              court={court}
+              reservations={reservationsByCourt[court.id] || []}
+            />
           ))}
         </div>
       </section>
@@ -78,7 +103,11 @@ export default async function ClubPage({ params }: ClubPageProps) {
         <h2 className="text-2xl font-semibold">Paddel Courts</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {paddelCourts.map((court) => (
-            <CourtCard key={court.id} court={court} />
+            <CourtCard
+              key={court.id}
+              court={court}
+              reservations={reservationsByCourt[court.id] || []}
+            />
           ))}
         </div>
       </section>

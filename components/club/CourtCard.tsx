@@ -1,8 +1,9 @@
-import { Court } from "@/lib/schema";
+"use client";
+
+import { Court, Reservation } from "@/lib/schema";
 import { Card, CardContent, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import {
   Collapsible,
   CollapsibleContent,
@@ -11,23 +12,30 @@ import {
 import { Button } from "../ui/button";
 import { ChevronsUpDown } from "lucide-react";
 import { CourtAvailability } from "./CourtAvailability";
+import { useRouter } from "next/navigation";
 
 interface CourtCardProps {
   court: Court;
+  reservations: Reservation[];
 }
 
-export function CourtCard({ court }: CourtCardProps) {
+export function CourtCard({ court, reservations }: CourtCardProps) {
+  const router = useRouter();
+
   return (
     <Collapsible>
-      <Card className="rounded-lg">
+      <Card
+        className="rounded-lg cursor-pointer hover:bg-slate-100"
+        onClick={() => router.push(`/clubs/${court.clubId}/courts/${court.id}`)}
+      >
         <div className="flex items-center justify-between p-6">
-          <Link
-            href={`/clubs/${court.clubId}/courts/${court.id}`}
-            className="hover:underline"
+          <CardTitle className="text-lg">{court.name}</CardTitle>
+          <CollapsibleTrigger
+            asChild
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
           >
-            <CardTitle className="text-lg">{court.name}</CardTitle>
-          </Link>
-          <CollapsibleTrigger asChild>
             <Button variant="ghost" size="icon" className="w-8 h-8">
               <ChevronsUpDown className="h-4 w-4" />
               <span className="sr-only">Toggle</span>
@@ -69,8 +77,12 @@ export function CourtCard({ court }: CourtCardProps) {
             </Badge>
           </div>
         </CardContent>
-        <CollapsibleContent>
-          <CourtAvailability />
+        <CollapsibleContent
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <CourtAvailability reservations={reservations} />
         </CollapsibleContent>
       </Card>
     </Collapsible>
