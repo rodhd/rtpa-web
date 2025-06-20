@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { reservations, profiles, courts } from "@/lib/schema";
+import { reservations, profiles, courts, matchPlayers } from "@/lib/schema";
 import { auth } from '@clerk/nextjs/server';
-import { and, or, lte, gt, lt, gte, isNull, eq, inArray } from "drizzle-orm";
+import { and, or, lte, gt, lt, gte, isNull, eq, inArray, SQL } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function createReservation(data: {
@@ -123,12 +123,36 @@ export async function getUserReservations() {
           club: true,
         },
       },
-      match: true,
     },
     orderBy: (reservations, { desc }) => [desc(reservations.startDate)],
   });
 
-  return userReservations;
+  const reservationIds = userReservations.map((r) => r.id);
+  if (reservationIds.length === 0) {
+    return userReservations;
+  }
+
+  const matchesForReservations = await db.query.matches.findMany({
+    where: inArray(reservations.id, reservationIds),
+    with: {
+      matchPlayers: {
+        with: {
+          profile: true,
+        },
+      },
+      matchSets: true,
+    },
+  });
+
+  return userReservations.map((reservation) => {
+    const match = matchesForReservations.find(
+      (m) => m.reservationId === reservation.id
+    );
+    return {
+      ...reservation,
+      match: match || null,
+    };
+  });
 }
 
 export async function deleteReservation(reservationId: number) {

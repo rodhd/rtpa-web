@@ -1,11 +1,18 @@
 import { getUserReservations } from "@/app/actions/reservations";
 import { ReservationCard } from "@/components/reservation/ReservationCard";
-import { Reservation, Court, Club, Match } from "@/lib/schema";
+import { Reservation, Court, Club, Match, MatchPlayer, MatchSet, Profile } from "@/lib/schema";
 
 export default async function ReservationsPage() {
   const reservations = (await getUserReservations()) as (Reservation & {
     court: Court & { club: Club };
-    match: Match | null;
+    match:
+      | (Match & {
+          matchPlayers: (MatchPlayer & {
+            profile: Profile | null;
+          })[];
+          matchSets: MatchSet[];
+        })
+      | null;
   })[];
 
   return (
