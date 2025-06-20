@@ -8,6 +8,8 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CourtCard } from "@/components/club/CourtCard";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ClubPageProps {
   params: {
@@ -55,7 +57,12 @@ export default async function ClubPage({ params }: ClubPageProps) {
       {/* Club Header Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold">{club.name}</h1>
+          <div className="flex justify-between items-start">
+            <h1 className="text-4xl font-bold">{club.name}</h1>
+            <Link href={`/clubs/${clubId}/leaderboard`}>
+              <Button>View Leaderboard</Button>
+            </Link>
+          </div>
           <div className="space-y-2">
             <p className="text-lg text-muted-foreground">{club.address}</p>
             {club.website && (
