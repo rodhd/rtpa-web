@@ -42,12 +42,19 @@ export async function getClubCourts(clubId: number) {
     return clubCourts;
 }
 
-export async function getCourtCountsByClub(clubId: number): Promise<Record<number, Record<string, number>>> {
-    const courtsByClub = await db.select({
+export async function getCourtCountsByClub(clubId?: number): Promise<Record<number, Record<string, number>>> {
+    const query = db.select({
         clubId: courts.clubId,
         type: courts.type,
         count: count()
-    }).from(courts).groupBy(courts.clubId, courts.type);
+    }).from(courts);
+
+    if (clubId) {
+        (query as any).where(eq(courts.clubId, clubId));
+    }
+
+    const courtsByClub = await query.groupBy(courts.clubId, courts.type);
+    
     const counts: Record<number, Record<string, number>> = {};
     courtsByClub.forEach(court => {
         if (!counts[court.clubId]) {

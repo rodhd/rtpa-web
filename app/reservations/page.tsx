@@ -1,8 +1,12 @@
 import { getUserReservations } from "@/app/actions/reservations";
 import { ReservationCard } from "@/components/reservation/ReservationCard";
+import { Reservation, Court, Club, Match } from "@/lib/schema";
 
 export default async function ReservationsPage() {
-  const reservations = await getUserReservations();
+  const reservations = (await getUserReservations()) as (Reservation & {
+    court: Court & { club: Club };
+    match: Match | null;
+  })[];
 
   return (
     <div className="container mx-auto p-4">

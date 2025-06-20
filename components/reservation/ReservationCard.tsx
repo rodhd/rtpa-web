@@ -7,9 +7,18 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { useTransition } from "react";
+import { Reservation, Court, Club, Match } from "@/lib/schema";
+import { AddMatchResultDialog } from "../match/AddMatchResultDialog";
+
+type ReservationWithCourtAndClub = Reservation & {
+  court: Court & {
+    club: Club;
+  };
+  match: Match | null;
+};
 
 type ReservationCardProps = {
-  reservation: Awaited<ReturnType<typeof getUserReservations>>[0];
+  reservation: ReservationWithCourtAndClub;
 };
 
 export function ReservationCard({ reservation }: ReservationCardProps) {
@@ -59,6 +68,9 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
               {isPending ? "Deleting..." : "Delete"}
             </Button>
           </form>
+        )}
+        {isPast && !reservation.match && (
+          <AddMatchResultDialog reservation={reservation} />
         )}
       </div>
     </Card>

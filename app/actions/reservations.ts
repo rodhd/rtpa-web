@@ -123,6 +123,7 @@ export async function getUserReservations() {
           club: true,
         },
       },
+      match: true,
     },
     orderBy: (reservations, { desc }) => [desc(reservations.startDate)],
   });

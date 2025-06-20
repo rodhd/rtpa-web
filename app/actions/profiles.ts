@@ -54,4 +54,18 @@ export async function updateProfile(updateProfileFormData: profileFormSchemaType
         where: eq(profiles.id, user.id)
     });
     return profile;
+}
+
+export async function getClubProfiles(clubId: number) {
+  const clubProfiles = await db
+    .select({
+      id: profiles.id,
+      firstName: profiles.firstName,
+      lastName: profiles.lastName,
+    })
+    .from(profilesToClubs)
+    .innerJoin(profiles, eq(profilesToClubs.profileId, profiles.id))
+    .where(eq(profilesToClubs.clubId, clubId));
+
+  return clubProfiles;
 } 
