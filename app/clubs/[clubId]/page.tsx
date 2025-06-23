@@ -12,9 +12,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface ClubPageProps {
-  params: {
-    clubId: string;
-  };
+  params: Promise<{ clubId: string }>;
 }
 
 export default async function ClubPage({ params }: ClubPageProps) {

@@ -6,7 +6,7 @@ import { CreateCourtDialog } from "@/components/club/CreateCourtDialog";
 
 import { redirect } from "next/navigation";
 
-export default async function Page({ params }: { params: { clubId: string } }) {
+export default async function Page({ params }: { params: Promise<{ clubId: string }> }) {
     const { clubId } = await params;
     const user = currentUser();
 

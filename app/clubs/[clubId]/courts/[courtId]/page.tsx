@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { auth } from '@clerk/nextjs/server';
 
-export default async function CourtPage({ params }: { params: { clubId: string, courtId: string } }) {
+export default async function CourtPage({ params }: { params: Promise<{ clubId: string, courtId: string }> }) {
   const { userId } = await auth();
   const { clubId, courtId } = await params;
 

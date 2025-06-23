@@ -11,10 +11,8 @@ import {
 } from "@/components/ui/card";
 
 interface LeaderboardPageProps {
-    params: {
-      clubId: string;
-    };
-  }
+  params: Promise<{ clubId: string }>;
+}
 
 export default async function LeaderboardPage({ params }: LeaderboardPageProps) {
   const { clubId } = await params;
