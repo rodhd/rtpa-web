@@ -2,9 +2,6 @@
 
 This is a hobby project aimed at creating a free-to-use tool for tennis and padel clubs to manage court bookings and for players to find partners of a similar skill level.
 
-## Live Application
-
-[Link to the deployed application]() <!-- TODO: Add link to the deployed application -->
 
 ## 🚀 Features
 
